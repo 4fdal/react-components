@@ -1,9 +1,10 @@
-import { Col, Form, Row, Typography } from "antd";
+import { Button, Col, Form, Row, Typography } from "antd";
 import React from "react";
 import CodeEditor from "./Partials/Inputs/CodeEditor";
 import { GenerateInputOption } from "./Utils/Helpers";
 import GenerateInputs from "./Partials/GenerateInputs";
 import HtmlRender from "./Partials/HtrmlRender";
+import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons";
 
 /**
  *
@@ -26,6 +27,10 @@ export default function HTMLTemplateFormEditor({
   const [generateInputOption, setGenerateInputOption] = React.useState(
     GenerateInputOption.formText(html)
   );
+  const [mdSize, setMdSize] = React.useState({
+    left: 10,
+    right: 14,
+  });
 
   React.useEffect(() => {
     onChange(textHTML);
@@ -64,8 +69,8 @@ export default function HTMLTemplateFormEditor({
 
   return (
     <React.Fragment>
-      <Row gutter={10}>
-        <Col md={12}>
+      <Row gutter={5}>
+        <Col md={mdSize.left}>
           <Row>
             <Col md={24}>
               <CodeEditor
@@ -81,8 +86,36 @@ export default function HTMLTemplateFormEditor({
               />
             </Col>
           </Row>
+          <div style={{ position: "absolute", left: 5, top: 40 }}>
+            <Button
+              onClick={e => {
+                const left = mdSize.left + 1;
+                const right = mdSize.right - 1;
+
+                console.log({ left, right });
+
+                if (left > 1 && left < 18) {
+                  setMdSize({ left, right });
+                }
+              }}
+              icon={<RightCircleOutlined />}
+            />
+          </div>
         </Col>
-        <Col md={12}>
+        <Col md={mdSize.right}>
+          <div style={{ position: "absolute", right: 5, top: 40, zIndex: 999 }}>
+            <Button
+              onClick={e => {
+                const left = mdSize.left - 1;
+                const right = mdSize.right + 1;
+
+                if (right > 1 && right < 18) {
+                  setMdSize({ left, right });
+                }
+              }}
+              icon={<LeftCircleOutlined />}
+            />
+          </div>
           <HtmlRender
             wrapTemplateOptions={wrapTemplateOptions}
             html={getRenderTextHTML()}

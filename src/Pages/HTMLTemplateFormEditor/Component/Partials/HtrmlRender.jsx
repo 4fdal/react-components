@@ -1,5 +1,25 @@
-import { Card, Col, Row, Select, Typography } from "antd";
+import {
+  DesktopOutlined,
+  MobileOutlined,
+  TabletOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Col, Input, Radio, Row, Select, Typography } from "antd";
 import React from "react";
+
+const sizeViewHTMLOptions = {
+  mobile: {
+    width: 414,
+    height: 896,
+  },
+  tablet: {
+    width: 768,
+    height: 1024,
+  },
+  desktop: {
+    width: 1366,
+    height: 768,
+  },
+};
 
 /**
  *
@@ -13,6 +33,12 @@ export default function HtmlRender({ html = "", wrapTemplateOptions = [] }) {
     upperbody: wrapTemplateOptions[0] ? wrapTemplateOptions[0].upperbody : "",
     lowerbody: wrapTemplateOptions[0] ? wrapTemplateOptions[0].lowerbody : "",
   });
+
+  const [sizeViewHTML, setSizeViewHTML] = React.useState({
+    width: sizeViewHTMLOptions.desktop.width,
+    height: sizeViewHTMLOptions.desktop.height,
+  });
+  const [sizeType, setSizeType] = React.useState("desktop");
 
   const [wrapTemplateId, setWrapTemplateId] = React.useState(
     wrapTemplateOptions[0] ? wrapTemplateOptions[0].id : null
@@ -48,8 +74,60 @@ export default function HtmlRender({ html = "", wrapTemplateOptions = [] }) {
           <Col>
             <Typography.Text strong>HTML VIEW</Typography.Text>
           </Col>
-          <Col>
-            {wrapTemplateOptions[0] && (
+          <Col style={{ marginBlock: 10 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <Radio.Group
+                value={sizeType}
+                onChange={e => {
+                  const sizeType = e.target.value;
+                  setSizeType(sizeType);
+                  setSizeViewHTML(sizeViewHTMLOptions[sizeType]);
+                }}
+              >
+                <Radio.Button value="mobile">
+                  <MobileOutlined />
+                </Radio.Button>
+                <Radio.Button value="tablet">
+                  <TabletOutlined />
+                </Radio.Button>
+                <Radio.Button value="desktop">
+                  <DesktopOutlined />
+                </Radio.Button>
+              </Radio.Group>
+              <div
+                style={{
+                  marginTop: 5,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Input
+                  style={{ width: 55, textAlign: "center" }}
+                  value={sizeViewHTML.width}
+                  onChange={({ target: { value: width } }) =>
+                    setSizeViewHTML({ ...sizeViewHTML, width })
+                  }
+                />
+                <strong style={{ marginInline: 10 }}>X</strong>
+                <Input
+                  style={{ width: 55, textAlign: "center" }}
+                  value={sizeViewHTML.height}
+                  onChange={({ target: { value: height } }) =>
+                    setSizeViewHTML({ ...sizeViewHTML, height })
+                  }
+                />
+              </div>
+            </div>
+          </Col>
+          {wrapTemplateOptions[0] && (
+            <Col>
               <Select
                 style={{ width: 150 }}
                 value={wrapTemplateId}
@@ -59,17 +137,35 @@ export default function HtmlRender({ html = "", wrapTemplateOptions = [] }) {
                   value: wrapTemplate.id,
                 }))}
               />
-            )}
-          </Col>
+            </Col>
+          )}
         </Row>
       }
       style={{ height: "100%" }}
     >
-      <iframe
-        width="100%"
-        style={{ border: "none", height: "720px" }}
-        srcDoc={getTextHTML()}
-      />
+      <Row justify={"center"}>
+        <div
+          style={{
+            border: "none",
+            width: `${sizeViewHTML.width}px`,
+            height: `${sizeViewHTML.height}px`,
+            borderRadius: 10,
+            paddingBottom: 20,
+            background: "black",
+          }}
+        >
+          <iframe
+            style={{
+              border: "none",
+              width: "100%",
+              height: "100%",
+              padding: 0,
+              margin: 0,
+            }}
+            srcDoc={getTextHTML()}
+          />
+        </div>
+      </Row>
     </Card>
   );
 }
