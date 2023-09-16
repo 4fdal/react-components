@@ -1,15 +1,55 @@
 import {
+  Button,
   Card,
   Col,
   ColorPicker,
   Divider,
   Form,
   Input,
+  Modal,
   Row,
+  Tooltip,
   Typography,
 } from "antd";
 import React from "react";
 import UploadImage from "./Inputs/UploadImage";
+import { EditOutlined } from "@ant-design/icons";
+import FormGenerateInput from "./Forms/FormGenerateInput";
+
+export function ModalEditGenerateInput({
+  generateInput = {},
+  onChange = generateInput => {},
+}) {
+  const [showModal, setShowModal] = React.useState(false);
+
+  return (
+    <React.Fragment>
+      <Modal
+        open={showModal}
+        title={`Edit generate input '${generateInput.name}'`}
+        onCancel={() => setShowModal(false)}
+        okButtonProps={{ style: { display: "none" } }}
+        cancelButtonProps={{ style: { display: "none" } }}
+      >
+        <FormGenerateInput
+          saveText="Save"
+          onSubmit={async newGenerateInput => {
+            await onChange(newGenerateInput);
+            setShowModal(false);
+          }}
+          initialValues={generateInput}
+        />
+      </Modal>
+      <Tooltip title={`Change input type '${generateInput.label}'`}>
+        <Button
+          type="link"
+          onClick={() => setShowModal(true)}
+          icon={<EditOutlined />}
+        />
+      </Tooltip>
+    </React.Fragment>
+  );
+}
 
 export function ItemGenerateInput({
   onUploadImage = (e, setImageUrl, setLoading) => {},
@@ -21,6 +61,7 @@ export function ItemGenerateInput({
     newChangegenerateInput.value = value;
     onChange(newChangegenerateInput);
   };
+
   let renderInput = null;
   switch (generateInput.type) {
     case "text":
@@ -56,11 +97,27 @@ export function ItemGenerateInput({
     default:
       break;
   }
+
   if (generateInput && renderInput)
     return (
-      <Form.Item name={generateInput.name} label={generateInput.label}>
-        {renderInput}
-      </Form.Item>
+      <React.Fragment>
+        <Form.Item
+          style={{ marginTop: 5, padding: 0 }}
+          name={generateInput.name}
+          label={generateInput.label}
+        >
+          <Row>
+            <Col md={23}>{renderInput}</Col>
+            <Col md={1}>
+              <ModalEditGenerateInput
+                key={Math.random()}
+                onChange={onChange}
+                generateInput={generateInput}
+              />
+            </Col>
+          </Row>
+        </Form.Item>
+      </React.Fragment>
     );
 }
 
@@ -83,7 +140,6 @@ export default function GenerateInputs({
     setStateGenerateInputs([...newStateGenerateInputs]);
     onChange(stateGenerateInputs);
   };
-
   return (
     <Card
       style={{ marginTop: 10 }}
@@ -102,6 +158,8 @@ export default function GenerateInputs({
             {stateGenerateInputs.map((generateInput, index) => (
               <ItemGenerateInput
                 generateInput={generateInput}
+                // key={`${Math.random()}_${index}`}
+                // key={JSON.stringify(generateInput)}
                 key={index}
                 onChange={valueGenerateInput => {
                   handleChangeGenerateInput(valueGenerateInput, index);

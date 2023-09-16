@@ -1,5 +1,5 @@
 import { EyeOutlined, LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Col, Modal, Row } from "antd";
+import { Button, Col, Modal, Row, Tooltip } from "antd";
 import React from "react";
 
 /**
@@ -41,7 +41,6 @@ export default function UploadImage(props) {
       <Modal
         title="File Gambar"
         open={showImage}
-        cancelText="Oke"
         okButtonProps={{ hidden: true }}
         onCancel={() => setShowImage(false)}
       >
@@ -58,13 +57,17 @@ export default function UploadImage(props) {
             Upload Gambar
           </Button>
         </Col>
-        <Col>
-          <Button
-            type="primary"
-            icon={loading ? <LoadingOutlined /> : <EyeOutlined />}
-            onClick={() => setShowImage(true)}
-          ></Button>
-        </Col>
+        {imageUrl && (
+          <Col>
+            <Tooltip title={`Show image url '${imageUrl}'`}>
+              <Button
+                type="primary"
+                icon={loading ? <LoadingOutlined /> : <EyeOutlined />}
+                onClick={() => setShowImage(true)}
+              ></Button>
+            </Tooltip>
+          </Col>
+        )}
       </Row>
     </React.Fragment>
   );
